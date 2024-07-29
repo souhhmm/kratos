@@ -51,9 +51,6 @@ class MainControl:
     def turn_towards_goal(self):
         rate = rospy.Rate(10)
         twist = Twist()
-        twist.linear.x = 0.0
-        twist.angular.z = 0.0
-        self.cmd_pub.publish(twist)
 
         while not rospy.is_shutdown():
             dx = self.goal.x - self.current_pose.position.x

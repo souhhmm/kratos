@@ -33,21 +33,8 @@ class ObstacleHandlingActionServer:
             self.cmd_pub.publish(twist)
             rospy.sleep(0.1)
 
-        # turn back to original direction
-        # twist.angular.z = -0.5
-        # for _ in range(36):
-        #     self.cmd_pub.publish(twist)
-        #     rospy.sleep(0.1)
-
-        # move forward
-        # twist.angular.z = 0.0
-        # twist.linear.x = 0.2
-        # for _ in range(1):
-        #     self.cmd_pub.publish(twist)
-        #     rospy.sleep(0.1)
-
-        twist.linear.x = 0.0
-        self.cmd_pub.publish(twist)
+        # twist.linear.x = 0.0
+        # self.cmd_pub.publish(twist)
 
 if __name__ == '__main__':
     rospy.init_node('obstacle_handling_server')
