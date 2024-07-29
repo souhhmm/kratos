@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="green_sphere">
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0.1 0 0 0</pose>
+      <!-- <collision name="collision">
+        <geometry>
+          <sphere>
+            <radius>0.0001</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+        <laser_retro>0</laser_retro>
+      </collision> -->
+      <visual name="visual">
+        <geometry>
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>0.0 1.0 0.0 0.5</ambient>
+          <diffuse>0.0 1.0 0.0 1.0</diffuse>
+          <specular>0.0 1.0 0.0 1.0</specular>
+          <emissive>0.0 1.0 0.0 1.0</emissive>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

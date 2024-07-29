@@ -1,0 +1,7 @@
+<launch>
+    <node name="obstacle_detection_server" pkg="week3_package" type="obstacle_detection_server.py" output="screen"/>
+    <node name="obstacle_handling_server" pkg="week3_package" type="obstacle_handling_server.py" output="screen"/>
+    <node name="main_control" pkg="week3_package" type="main_control.py" output="screen"/>
+    <node name="spawn_sphere" pkg="week3_package" type="spawn_sphere.py" output="screen"/>
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+</launch>
