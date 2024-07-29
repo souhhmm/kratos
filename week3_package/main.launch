@@ -1,7 +1,16 @@
 <launch>
+    <arg name="target_x" default="0.8"/>
+    <arg name="target_y" default="0.8"/>
+    
+    <param name="~goal_x" value="$(arg target_x)"/>
+    <param name="~goal_y" value="$(arg target_y)"/>
+    <param name="~x" value="$(arg target_x)"/>
+    <param name="~y" value="$(arg target_y)"/>
+    
     <node name="obstacle_detection_server" pkg="week3_package" type="obstacle_detection_server.py" output="screen"/>
     <node name="obstacle_handling_server" pkg="week3_package" type="obstacle_handling_server.py" output="screen"/>
     <node name="main_control" pkg="week3_package" type="main_control.py" output="screen"/>
-    <node name="spawn_sphere" pkg="week3_package" type="spawn_sphere.py" output="screen"/>
+    <node name="spawn_target" pkg="week3_package" type="spawn_target.py" output="screen"/>
+    
     <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
 </launch>

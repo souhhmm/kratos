@@ -30,7 +30,7 @@ class ObstacleHandlingActionServer:
         # move forward
         twist.angular.z = 0.0
         twist.linear.x = 0.2
-        for _ in range(20):
+        for _ in range(15):
             self.cmd_pub.publish(twist)
             rospy.sleep(0.1)
 
@@ -43,7 +43,7 @@ class ObstacleHandlingActionServer:
         # move forward
         twist.angular.z = 0.0
         twist.linear.x = 0.2
-        for _ in range(20):
+        for _ in range(1):
             self.cmd_pub.publish(twist)
             rospy.sleep(0.1)
 

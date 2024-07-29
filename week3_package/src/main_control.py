@@ -10,7 +10,9 @@ from week3_package.msg import ObstacleDetectionAction, ObstacleDetectionGoal, Ob
 
 class MainControl:
     def __init__(self):
-        self.goal = Point(0.5, 0.5, 0)
+        self.goal_x = rospy.get_param('~goal_x')
+        self.goal_y = rospy.get_param('~goal_y')
+        self.goal = Point(self.goal_x, self.goal_y, 0)
         self.current_pose = Pose()
         self.obstacle_count = 0
         self.max_obstacles = 5
@@ -50,7 +52,7 @@ class MainControl:
 
             yaw_error = desired_yaw - current_yaw
 
-            if abs(yaw_error) > 0.05: 
+            if abs(yaw_error) > 0.01: 
                 twist.angular.z = 0.5 * yaw_error / abs(yaw_error)
                 self.cmd_pub.publish(twist)
             else:
@@ -65,8 +67,7 @@ class MainControl:
         twist = Twist()
 
         while self.obstacle_count < self.max_obstacles and not rospy.is_shutdown():
-            distance = math.sqrt((self.goal.x - self.current_pose.position.x)**2 + 
-                                 (self.goal.y - self.current_pose.position.y)**2)
+            distance = math.sqrt((self.goal.x - self.current_pose.position.x)**2 + (self.goal.y - self.current_pose.position.y)**2)
             rospy.loginfo(f"Distance to goal: {distance}")
             if distance <= self.goal_tolerance:
                 rospy.loginfo("Goal reached.")
@@ -78,18 +79,24 @@ class MainControl:
             twist.linear.x = 0.2
             self.cmd_pub.publish(twist)
 
-            self.detect_obstacles()
+            if not self.detect_obstacles():
+                continue
+            
+            
             rate.sleep()
 
     def detect_obstacles(self):
+        obstacle_detected = False
         self.obstacle_detection_client.send_goal(ObstacleDetectionGoal())
-        self.obstacle_detection_client.wait_for_result()
-        result = self.obstacle_detection_client.get_result()
+        if self.obstacle_detection_client.wait_for_result(rospy.Duration(0.01)):
+            result = self.obstacle_detection_client.get_result()
+            if result.obstacle_detected:
+                rospy.loginfo("Obstacle detected.")
+                obstacle_detected = True
+                self.handle_obstacle()
 
-        if result.obstacle_detected:
-            rospy.loginfo("Obstacle detected.")
-            self.handle_obstacle()
-
+        return obstacle_detected
+    
     def handle_obstacle(self):
         twist = Twist()
         twist.linear.x = 0.0
@@ -105,6 +112,8 @@ class MainControl:
                 rospy.loginfo(f"Handled obstacle {self.obstacle_count}/{self.max_obstacles}.")
             else:
                 rospy.logwarn("Obstacle handling interrupted by ROS shutdown.")
+                
+        self.turn_towards_goal()
 
 if __name__ == '__main__':
     rospy.init_node('main_control')

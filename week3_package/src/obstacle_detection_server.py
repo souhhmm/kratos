@@ -12,7 +12,7 @@ class ObstacleDetectionActionServer:
         self.result = ObstacleDetectionResult()
         self.laser_sub = rospy.Subscriber('/scan', LaserScan, self.scan_callback)
         self.obstacle_detected = False
-        self.threshold_distance = 0.3
+        self.threshold_distance = 0.4
         self.server.start()
 
     def scan_callback(self, data):
