@@ -21,7 +21,6 @@ class ObstacleHandlingActionServer:
     def navigate_around_obstacle(self):
         # turn 90 degrees
         twist = Twist()
-        twist.linear.x = 0.0
         twist.angular.z = 0.5
         for _ in range(36):
             self.cmd_pub.publish(twist)
@@ -30,22 +29,22 @@ class ObstacleHandlingActionServer:
         # move forward
         twist.angular.z = 0.0
         twist.linear.x = 0.2
-        for _ in range(15):
+        for _ in range(30):
             self.cmd_pub.publish(twist)
             rospy.sleep(0.1)
 
         # turn back to original direction
-        twist.angular.z = -0.5
-        for _ in range(36):
-            self.cmd_pub.publish(twist)
-            rospy.sleep(0.1)
+        # twist.angular.z = -0.5
+        # for _ in range(36):
+        #     self.cmd_pub.publish(twist)
+        #     rospy.sleep(0.1)
 
         # move forward
-        twist.angular.z = 0.0
-        twist.linear.x = 0.2
-        for _ in range(1):
-            self.cmd_pub.publish(twist)
-            rospy.sleep(0.1)
+        # twist.angular.z = 0.0
+        # twist.linear.x = 0.2
+        # for _ in range(1):
+        #     self.cmd_pub.publish(twist)
+        #     rospy.sleep(0.1)
 
         twist.linear.x = 0.0
         self.cmd_pub.publish(twist)

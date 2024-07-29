@@ -5,7 +5,7 @@ from gazebo_msgs.srv import SpawnModel
 from geometry_msgs.msg import Pose, Point, Quaternion
 
 def spawn_target():
-    rospy.init_node('spawn_sphere')
+    rospy.init_node('spawn_target')
     
     x = rospy.get_param('~x')
     y = rospy.get_param('~y')
@@ -24,9 +24,9 @@ def spawn_target():
 
     try:
         spawn_model_prox(model_name, model_xml, '', initial_pose, 'world')
-        rospy.loginfo("Spawned green sphere at (1, 1)")
-    except rospy.ServiceException as e:
-        rospy.logerr("Service call failed: {0}".format(e))
+        rospy.loginfo("Spawned target at x: {}, y: {}".format(x, y))
+    except rospy.ServiceException:
+        rospy.logerr("Error")
 
 if __name__ == '__main__':
     try:

@@ -17,7 +17,8 @@ class MainControl:
         self.obstacle_count = 0
         self.max_obstacles = 5
         self.goal_tolerance = 0.1
-
+        self.kp = 0.5
+        
         self.obstacle_detection_client = actionlib.SimpleActionClient('obstacle_detection', ObstacleDetectionAction)
         self.obstacle_handling_client = actionlib.SimpleActionClient('obstacle_handling', ObstacleHandlingAction)
 
@@ -40,9 +41,19 @@ class MainControl:
         euler = euler_from_quaternion([q.x, q.y, q.z, q.w])
         return euler[2] # roll, pitch, yaw
 
+    def normalize_angle(self, angle):
+        while angle > math.pi:
+            angle -= 2 * math.pi
+        while angle < -math.pi:
+            angle += 2 * math.pi
+        return angle
+    
     def turn_towards_goal(self):
         rate = rospy.Rate(10)
         twist = Twist()
+        twist.linear.x = 0.0
+        twist.angular.z = 0.0
+        self.cmd_pub.publish(twist)
 
         while not rospy.is_shutdown():
             dx = self.goal.x - self.current_pose.position.x
@@ -50,10 +61,10 @@ class MainControl:
             desired_yaw = math.atan2(dy, dx)
             current_yaw = self.get_yaw_from_quaternion(self.current_pose.orientation)
 
-            yaw_error = desired_yaw - current_yaw
+            yaw_error = self.normalize_angle(desired_yaw - current_yaw)
 
             if abs(yaw_error) > 0.01: 
-                twist.angular.z = 0.5 * yaw_error / abs(yaw_error)
+                twist.angular.z = self.kp * yaw_error / abs(yaw_error)
                 self.cmd_pub.publish(twist)
             else:
                 twist.angular.z = 0
@@ -68,7 +79,7 @@ class MainControl:
 
         while self.obstacle_count < self.max_obstacles and not rospy.is_shutdown():
             distance = math.sqrt((self.goal.x - self.current_pose.position.x)**2 + (self.goal.y - self.current_pose.position.y)**2)
-            rospy.loginfo(f"Distance to goal: {distance}")
+            # rospy.loginfo(f"Distance to goal: {distance}")
             if distance <= self.goal_tolerance:
                 rospy.loginfo("Goal reached.")
                 twist.linear.x = 0.0
@@ -82,13 +93,12 @@ class MainControl:
             if not self.detect_obstacles():
                 continue
             
-            
             rate.sleep()
 
     def detect_obstacles(self):
         obstacle_detected = False
         self.obstacle_detection_client.send_goal(ObstacleDetectionGoal())
-        if self.obstacle_detection_client.wait_for_result(rospy.Duration(0.01)):
+        if self.obstacle_detection_client.wait_for_result(rospy.Duration(0.1)):
             result = self.obstacle_detection_client.get_result()
             if result.obstacle_detected:
                 rospy.loginfo("Obstacle detected.")
